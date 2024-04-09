@@ -1,0 +1,28 @@
+{
+    "items": [
+      {
+        "R_fighter": "Thiago Santos",
+       "B_fighter": "Johnny Walker",
+       "R_odds": -150,
+       "B_odds": 130
+      },
+      {
+        "R_fighter": "chu",
+       "B_fighter": "do",
+       "R_odds": -270,
+       "B_odds": 180
+      },
+      {
+        "R_fighter": "pow",
+        "B_fighter": "ling",
+        "R_odds": -300,
+        "B_odds": 190
+      },
+      {
+        "R_fighter": "andre",
+        "B_fighter": "3000",
+        "R_odds": -700,
+        "B_odds": 900
+      }
+    ]
+}
