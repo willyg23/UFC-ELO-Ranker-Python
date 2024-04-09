@@ -59,8 +59,9 @@ def create_fighter_entry(fighter_name, fight_entity, data_entry, side):
 
 
 with open('ufc_data.json', 'r') as f:
-    data = json.load(f)
+    load = json.load(f)
 
+    data = load['items']
 # Initialize the eloCalculator object
 elo_calculator_object = EloCalculator()  # Assuming you have the EloCalculator class defined
 
