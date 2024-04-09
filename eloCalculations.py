@@ -37,7 +37,8 @@ class EloCalculator:
           int: The new Elo rating.
       """
 
-      newRating = fighterElo + (kFactor * (gameResult - expectedScore)).toInt()
+    #   newRating = fighterElo + (kFactor * (gameResult - expectedScore)).toInt()
+      newRating = round(fighterElo + (kFactor * (gameResult - expectedScore)))
 
       # even with subInput (in main) set to 1.0, it still seems to have way to much of an impact for my math / logic to be correct. as it increases all the top ranking by ~300 elo. can't tell how accurate.
       # expected charles oliveira to be #1, but the top 3 is Donald Cerrone, Dustin Poirier, and Charles Oliveira. Which is plausible I guess? More concerned about the +300 in elo for almost everyone. that seems wrong.
@@ -50,7 +51,8 @@ class EloCalculator:
 
           else:
               # use fighter elo instead of newRating. because we want a % increase on the math that is occuring on their old rating. applying it to their new rating would give them a bigger buff that isn't accurate.
-              newRating += (fighterElo * (item / 100)).toInt()  # /100 is so that users can input "5" and have a modifier of 5 percent
+            # newRating += (fighterElo * (item / 100)).toInt() # .toInt() didn't work outside this for loop (~line 41) but does work here. weird.
+            newRating += round((fighterElo * (item / 100))) # /100 is so that users can input "5" and have a modifier of 5 percent
 
       return newRating
 
@@ -68,7 +70,7 @@ class EloCalculator:
       return 1.0 / (1.0 + math.pow(10.0, ((opponentRating - fighterElo) / 400.0)))
   
 
-  
+
   def setNewRating(self, winner, r_fighter, b_fighter, fighterHashMap, modifierList, dateOfFight):
       """
       Sets new Elo ratings for winner and loser.
