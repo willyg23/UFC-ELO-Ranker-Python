@@ -23,9 +23,9 @@ _fights = []  # List to hold FightEntity objects
 testT = 0
 for i in range(len(data) - 1, -1, -1):
     testT = testT + 1
-    fight_entity = FightEntity()  # Assuming you have a FightEntity class
+    fight_entity = FightEntity()  
 
-    # Access the fighter data from the JSON
+   
     fight_entity.r_fighter_string = data[i]['R_fighter']
     fight_entity.b_fighter_string = data[i]['B_fighter']
 
@@ -49,7 +49,7 @@ for i in range(len(data) - 1, -1, -1):
     
 
     date_to_parse = data[i]['date']  # Assuming format like "MM/DD/YYYY"
-    date_format = "%m/%d/%Y"  # Match your date format
+    date_format = "%m/%d/%Y"  # Match date format
 
     parsed_date = datetime.strptime(date_to_parse, date_format)
 
@@ -67,7 +67,7 @@ for i in range(len(data) - 1, -1, -1):
             "gender": data[i]["gender"],
             "current_win_streak": data[i]["R_current_win_streak"],
             "current_loss_streak": data[i]["R_current_lose_streak"],
-            "avg_SIG_STR_landed": data[i]["R_avg_SIG_STR_landed"],  # Direct assignment
+            "avg_SIG_STR_landed": data[i]["R_avg_SIG_STR_landed"],  
             "avg_SIG_STR_pct": data[i]["R_avg_SIG_STR_pct"], 
             "avg_SUB_ATT": data[i]["R_avg_SUB_ATT"], 
             "avg_TD_landed": data[i]["R_avg_TD_landed"],  
@@ -121,7 +121,7 @@ for i in range(len(data) - 1, -1, -1):
             "fight_history": [fight_entity],  
             "stance": data[i]["B_Stance"],
             "wins": 0,
-            "age": fight_entity.b_age,  # Assuming you meant b_age here
+            "age": fight_entity.b_age,  
             "losses": 0   
         }
         _fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
@@ -141,10 +141,9 @@ ko_tko_input = None
 _modifiers.append(sub_win_input)  # Use append() to add items to a list
 _modifiers.append(ko_tko_input)
 
-# elo_hash_map_r = ""  redundant I believe
-# elo_hash_map_b = ""  redundant I believe
 
-# current_fighter = None  redundant I believe
+
+
 date_of_fight = ""  # Empty string for now
 
 
@@ -164,7 +163,7 @@ for fighter_name, fighter_entity in sorted_fighters:
 
 print("eloHashMap Test") 
 print("fighterEloHashMap test:")
-print(_fighters["Jon Jones"].fighter_elo_hash_map["Jon Jones-4-23-2016"])  # 1313
-print(_fighters["Jon Jones"].fighter_elo_hash_map["Jon Jones-7-6-2019"])  # 1343
-print(_fighters["Alexander Gustafsson"].fighter_elo_hash_map["Alexander Gustafsson-5-28-2017"])  # 1247
-print(_fighters["Drew Dober"].fighter_elo_hash_map["Drew Dober-12-13-2014"])  # 1191
+print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # 1313
+print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # 1343
+print(_fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # 1247
+print(_fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # 1191

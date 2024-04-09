@@ -51,7 +51,6 @@ class EloCalculator:
 
           else:
               # use fighter elo instead of newRating. because we want a % increase on the math that is occuring on their old rating. applying it to their new rating would give them a bigger buff that isn't accurate.
-            #   newRating += (fighterElo * (item / 100)).toInt()  # /100 is so that users can input "5" and have a modifier of 5 percent
             # newRating += (fighterElo * (item / 100)).toInt() # .toInt() didn't work outside this for loop (~line 41) but does work here. weird.
             newRating += round((fighterElo * (item / 100))) # /100 is so that users can input "5" and have a modifier of 5 percent
 
