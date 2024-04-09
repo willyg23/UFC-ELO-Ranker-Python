@@ -4,59 +4,6 @@ from fight import FightEntity
 from fighter import FighterEntity
 from datetime import datetime
 
-def create_fighter_entry(fighter_name, fight_entity, data_entry, side):
-    """Creates a new fighter entry or returns an existing one.
-
-    Args:
-        fighter_name (str):  The name of the fighter.
-        fight_entity (FightEntity): The current FightEntity object.
-        data_entry (dict):  A single entry from your JSON data.
-        side (str): 'R' for red corner fighter, 'B' for blue corner fighter.
-
-    Returns:
-        FighterEntity:  The created or updated FighterEntity.
-    """
-
-    new_entry = {
-        "name": fighter_name,
-        "weight_classes": [fight_entity.weight_class],
-        "gender": data_entry["gender"],
-
-        "current_win_streak": data_entry[f"{side}_current_win_streak"],  # Dynamic 'R' or 'B'
-        "current_loss_streak": data_entry[f"{side}_current_lose_streak"], 
-
-        "avg_SIG_STR_landed": data_entry[f"{side}_avg_SIG_STR_landed"], 
-        "avg_SIG_STR_pct": data_entry[f"{side}_avg_SIG_STR_pct"], 
-        "avg_SUB_ATT": data_entry[f"{side}_avg_SUB_ATT"], 
-        "avg_TD_landed": data_entry[f"{side}_avg_TD_landed"],  
-        "avg_TD_pct": data_entry[f"{side}_avg_TD_pct"],  
-
-        "total_rounds_fought": data_entry[f"{side}_total_rounds_fought"],
-        "total_title_bouts": data_entry[f"{side}_total_title_bouts"],
-        "wins_by_Decision_Majority": data_entry[f"{side}_win_by_Decision_Majority"],
-        "wins_by_Decision_Split": data_entry[f"{side}_win_by_Decision_Split"],
-        "wins_by_Decision_Unanimous": data_entry[f"{side}_win_by_Decision_Unanimous"],
-        "wins_by_KO": data_entry[f"{side}_win_by_KO/TKO"], 
-        "wins_by_Submission": data_entry[f"{side}_win_by_Submission"],
-        "wins_by_TKO_Doctor_Stoppage": data_entry[f"{side}_win_by_TKO_Doctor_Stoppage"],
-        "height_cms": data_entry[f"{side}_Height_cms"],  
-        "reach_cms": data_entry[f"{side}_Reach_cms"],  
-
-        "elo": [1200],  
-        "fight_history": [fight_entity],  
-        "stance": data_entry[f"{side}_Stance"],
-        "wins": 0,
-        "losses": 0   
-    }
-
-    # You need to determine 'R' or 'B' for age more definitively
-    if data_entry.get('R_fighter') == fighter_name:
-        new_entry['age'] = fight_entity.r_age 
-    else:
-        new_entry['age'] = fight_entity.b_age
-
-    return FighterEntity(**new_entry)
-
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
@@ -112,38 +59,80 @@ for i in range(len(data) - 1, -1, -1):
 
     _fights.append(fight_entity)  # Add the entity to the fights list
 
-    if testT == 100:
-        for fighter_name, fighter_entity in _fighters.items():
-            print(f"Fighter Name: {fighter_name}")
 
-            # Access and print individual attributes
-            print(f"Elo: {fighter_entity.elo}")
-            print(f"Weight Classes: {fighter_entity.weight_classes}")
-            print(f"Gender: {fighter_entity.gender}")
-            # ... and so on for other attributes
+    if _fighters.get(fight_entity.r_fighter_string) is None:  # Check if fighter exists
+        new_entry = {
+            "name": fight_entity.r_fighter_string,
+            "weight_classes": [fight_entity.weight_class],   
+            "gender": data[i]["gender"],
+            "current_win_streak": data[i]["R_current_win_streak"],
+            "current_loss_streak": data[i]["R_current_lose_streak"],
+            "avg_SIG_STR_landed": data[i]["R_avg_SIG_STR_landed"],  # Direct assignment
+            "avg_SIG_STR_pct": data[i]["R_avg_SIG_STR_pct"], 
+            "avg_SUB_ATT": data[i]["R_avg_SUB_ATT"], 
+            "avg_TD_landed": data[i]["R_avg_TD_landed"],  
+            "avg_TD_pct": data[i]["R_avg_TD_pct"],  
+            "total_rounds_fought": data[i]["R_total_rounds_fought"],
+            "total_title_bouts": data[i]["R_total_title_bouts"],
+            "wins_by_Decision_Majority": data[i]["R_win_by_Decision_Majority"],
+            "wins_by_Decision_Split": data[i]["R_win_by_Decision_Split"],
+            "wins_by_Decision_Unanimous": data[i]["R_win_by_Decision_Unanimous"],
+            "wins_by_KO": data[i]["R_win_by_KO/TKO"],
+            "wins_by_Submission": data[i]["R_win_by_Submission"],
+            "wins_by_TKO_Doctor_Stoppage": data[i]["R_win_by_TKO_Doctor_Stoppage"],
+            "height_cms": data[i]["R_Height_cms"],  
+            "reach_cms": data[i]["R_Reach_cms"],  
+            "elo": [1200],  
+            "fight_history": [fight_entity],  
+            "stance": data[i]["R_Stance"],
+            "wins": 0,
+            "age": fight_entity.r_age,
+            "losses": 0   
+        }
+        _fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
 
-            print("-----------------")  # Optional separator between fighters
-    if data[i]['R_fighter'] not in _fighters:
-        create_fighter_entry(data[i]['R_fighter'], fight_entity, data[i], 'R') 
+    # Link the entity to the fight
     fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
 
-    if data[i]['B_fighter'] not in _fighters:
-        create_fighter_entry(data[i]['B_fighter'], fight_entity, data[i], 'B')
-    fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
+
+    if _fighters.get(fight_entity.b_fighter_string) is None: 
+        new_entry = {
+            "name": fight_entity.b_fighter_string,
+            "weight_classes": [fight_entity.weight_class],   
+            "gender": data[i]["gender"],
+            "current_win_streak": data[i]["B_current_win_streak"],
+            "current_loss_streak": data[i]["B_current_lose_streak"],
+            "avg_SIG_STR_landed": data[i]["B_avg_SIG_STR_landed"], 
+            "avg_SIG_STR_pct": data[i]["B_avg_SIG_STR_pct"], 
+            "avg_SUB_ATT": data[i]["B_avg_SUB_ATT"], 
+            "avg_TD_landed": data[i]["B_avg_TD_landed"],  
+            "avg_TD_pct": data[i]["B_avg_TD_pct"],  
+            "total_rounds_fought": data[i]["B_total_rounds_fought"],
+            "total_title_bouts": data[i]["B_total_title_bouts"],
+            "wins_by_Decision_Majority": data[i]["B_win_by_Decision_Majority"],
+            "wins_by_Decision_Split": data[i]["B_win_by_Decision_Split"],
+            "wins_by_Decision_Unanimous": data[i]["B_win_by_Decision_Unanimous"],
+            "wins_by_KO": data[i]["B_win_by_KO/TKO"],
+            "wins_by_Submission": data[i]["B_win_by_Submission"],
+            "wins_by_TKO_Doctor_Stoppage": data[i]["B_win_by_TKO_Doctor_Stoppage"],
+            "height_cms": data[i]["B_Height_cms"],  
+            "reach_cms": data[i]["B_Reach_cms"],  
+            "elo": [1200],  
+            "fight_history": [fight_entity],  
+            "stance": data[i]["B_Stance"],
+            "wins": 0,
+            "age": fight_entity.b_age,  # Assuming you meant b_age here
+            "losses": 0   
+        }
+        _fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
+
+    # Link the entity to the fight
+    fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string] 
 
 
-    # if fighter_name not in _fighters:
-    # create_fighter_entry(data[i]['R_fighter'], fight_entity, data[i], 'R') 
-    # fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
 
-    # create_fighter_entry(data[i]['B_fighter'], fight_entity, data[i], 'B')
-    # fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
-# create_fighter_entry(data[i]['R_fighter'], fight_entity, data, 'R')
-# fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
 
-# create_fighter_entry(data[i]['B_fighter'], fight_entity, data, 'B')
-# fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
-
+#------------------------------------------end of for loop
 print('Creation of _fighters hasmap and _fights list has been completed! ')
 print('Length of the _fighters hashmap:', len(_fighters))  # Using len() for dictionary length
 print('Length of the _fights list:', len(_fights))        # Using len() for list length
@@ -165,7 +154,7 @@ date_of_fight = ""  # Empty string for now
 for fight in _fights:
     if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
         date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
-        elo_calculator_object.set_new_rating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, _fighters, _modifiers, date_of_fight)
+        elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, _fighters, _modifiers, date_of_fight)
 
 
 
