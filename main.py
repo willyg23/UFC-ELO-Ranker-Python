@@ -156,10 +156,11 @@ for fight in _fights:
 sorted_fighters = sorted(_fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
 
 # 2. Iteration and Ranking
-rank = 1  # Start rank at 1
-for fighter_name, fighter_entity in sorted_fighters:
+# have the highest ranked fighter print last, so in the terminal, you'll see the highest ranked fighters first.
+rank = 1749  # Start rank at 1749 (amount of fighters)
+for fighter_name, fighter_entity in sorted(sorted_fighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
     print(f'Fighter: {fighter_name} Elo: {fighter_entity.elo[-1]} Win/Loss ratio: W{fighter_entity.wins} L{fighter_entity.losses} Rank: {rank}')
-    rank += 1  # Increment rank
+    rank -= 1  # decrement rank
 
 print("eloHashMap Test") 
 print("fighterEloHashMap test:")
