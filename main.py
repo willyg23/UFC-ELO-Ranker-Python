@@ -129,9 +129,6 @@ for i in range(len(data) - 1, -1, -1):
     # Link the entity to the fight
     fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string] 
 
-
-
-
 #------------------------------------------end of for loop
 print('Creation of _fighters hasmap and _fights list has been completed! ')
 print('Length of the _fighters hashmap:', len(_fighters))  # Using len() for dictionary length
@@ -155,8 +152,6 @@ for fight in _fights:
     if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
         date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
         elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, _fighters, _modifiers, date_of_fight)
-
-
 
 # 1. Sorting Fighters
 sorted_fighters = sorted(_fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
