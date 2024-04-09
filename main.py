@@ -73,8 +73,9 @@ _fighters = {}  # Mapping fighter names to FighterEntity objects
 _fights = []  # List to hold FightEntity objects
 
 
-
+testT = 0
 for i in range(len(data) - 1, -1, -1):
+    testT = testT + 1
     fight_entity = FightEntity()  # Assuming you have a FightEntity class
 
     # Access the fighter data from the JSON
@@ -111,13 +112,37 @@ for i in range(len(data) - 1, -1, -1):
 
     _fights.append(fight_entity)  # Add the entity to the fights list
 
+    if testT == 100:
+        for fighter_name, fighter_entity in _fighters.items():
+            print(f"Fighter Name: {fighter_name}")
+
+            # Access and print individual attributes
+            print(f"Elo: {fighter_entity.elo}")
+            print(f"Weight Classes: {fighter_entity.weight_classes}")
+            print(f"Gender: {fighter_entity.gender}")
+            # ... and so on for other attributes
+
+            print("-----------------")  # Optional separator between fighters
+    if data[i]['R_fighter'] not in _fighters:
+        create_fighter_entry(data[i]['R_fighter'], fight_entity, data[i], 'R') 
+    fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
+
+    if data[i]['B_fighter'] not in _fighters:
+        create_fighter_entry(data[i]['B_fighter'], fight_entity, data[i], 'B')
+    fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
 
 
-create_fighter_entry(data[i]['R_fighter'], fight_entity, data, 'R')
-fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
+    # if fighter_name not in _fighters:
+    # create_fighter_entry(data[i]['R_fighter'], fight_entity, data[i], 'R') 
+    # fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
 
-create_fighter_entry(data[i]['B_fighter'], fight_entity, data, 'B')
-fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
+    # create_fighter_entry(data[i]['B_fighter'], fight_entity, data[i], 'B')
+    # fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
+# create_fighter_entry(data[i]['R_fighter'], fight_entity, data, 'R')
+# fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
+
+# create_fighter_entry(data[i]['B_fighter'], fight_entity, data, 'B')
+# fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
 
 print('Creation of _fighters hasmap and _fights list has been completed! ')
 print('Length of the _fighters hashmap:', len(_fighters))  # Using len() for dictionary length
