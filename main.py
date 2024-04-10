@@ -255,20 +255,33 @@ st.title("Fighter Elo over Time")
 #try 2 - data paganation
 
 # User Input
-elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
-above_or_below = st.selectbox("Above or Below?", ["above", "below"])
-fighters_per_page = 10  # Control how many fighters to show at once
+elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
+
+if elo_mode == "above":
+    elo_threshold = st.number_input("Elo Threshold (above):", value=1300, step=50)
+
+elif elo_mode == "below":
+    elo_threshold = st.number_input("Elo Threshold (below):", value=1125, step=50)
+
+else:  # 'within' mode
+    col1, col2 = st.columns(2)  # Create two columns for input boxes
+    with col1:
+        elo_lower_bound = st.number_input("Elo Lower Bound:", value=1200, step=50)
+    with col2:
+        elo_upper_bound = st.number_input("Elo Upper Bound:", value=1600, step=50)
 
 # Data Filtering
-if above_or_below == "above":
+if elo_mode == "above":
     filtered_df = df[df['Elo'] > elo_threshold] 
-else:
+elif elo_mode == "below":
     filtered_df = df[df['Elo'] < elo_threshold] 
-
+else:  # 'within' mode
+    filtered_df = df[(df['Elo'] >= elo_lower_bound) & (df['Elo'] <= elo_upper_bound)] 
 # Figure Size
 plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
 
 # Pagination Logic
+fighters_per_page = 10  # Control how many fighters to show at once
 current_page = 0
 start_index = current_page * fighters_per_page
 end_index = start_index + fighters_per_page
