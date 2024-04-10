@@ -264,6 +264,8 @@ if "Search By Fighter Name" in selected_features:
     sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
     plt.xticks(rotation=45) 
     plt.title(f"Fighter Elo over Time: {fighterSearchVar}") # Dynamic title
+    #added dots in the search section because the dots look much better on a graph with just one line.
+    plt.scatter(filtered_df['Date'], filtered_df['Elo'], s=25)
 
     legend_container = st.empty() # Placeholder for the legend
 
