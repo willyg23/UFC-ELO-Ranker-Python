@@ -303,7 +303,7 @@ fighters_per_page = 15
 
 # *** Text on Hover Implementation ***
 hover_label = st.empty()  
-fig = plt.gcf() 
+fig = plt.gcf()
 
 def annotate(x, y):
     print("Hover at:", x, y) 
@@ -312,32 +312,40 @@ def annotate(x, y):
     fig.canvas.draw_idle()
 
 
-# --- Pagination and Plotting logic --- 
-def update_graph():  # Create a function to make updates easier
+fig.canvas.mpl_connect('motion_notify_event', annotate)  
+
+# --- Create initial plot --- 
+sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time")
+
+legend_container = st.empty() # Placeholder for the legend
+fighters_label = st.empty()   # Placeholder for fighter names
+
+# --- Function to update displayed fighters and legend ---
+def update_display():
     start_index = current_page * fighters_per_page
     end_index = start_index + fighters_per_page
     fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
 
-    # Clear existing plot elements 
-    plt.clf() 
+    # Update the legend
+    legend = plt.legend(labels=fighters_to_display)  
+    # legend_container.pyplot(legend)  
+    legend_container.empty()  # Clear the previous legend
+    legend_container.pyplot(fig) # Display the figure with updated legend
 
-    # Seaborn Plot 
-    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-    plt.legend(labels=fighters_to_display)  # Update legend 
-    plt.xticks(rotation=45) 
-    plt.title("Fighter Elo over Time")
+    # Update the fighter names label  
+    fighters_label.text("\n".join(fighters_to_display)) 
 
-    st.pyplot(fig) 
-
-update_graph()  # Initial graph generation
+update_display()  # Initial display
 
 if st.button("Previous Page"):
     if current_page > 0:  
         current_page -= 1
-        update_graph()  # Update graph when page changes 
+        update_display()  # Update graph when page changes 
 if st.button("Next Page"):
     current_page += 1
-    update_graph()  
+    update_display()  
 
 fig.canvas.mpl_connect('motion_notify_event', annotate)  
 # # Figure Size
