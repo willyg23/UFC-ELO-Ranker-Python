@@ -270,23 +270,26 @@ elo_mode = None
 elo_lower_bound = None
 elo_upper_bound = None
 
+
+# this if statement handles the UI components for getting filter input from the user.
 if "Elo Range" in selected_features:
     st.subheader("Elo Filtering") 
     elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
 
     if elo_mode in ["above", "below"]:  # Combine cases for 'above' and 'below'
-        elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1500 if elo_mode == "above" else 1000, step=50)
+        elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1300 if elo_mode == "above" else 1100, step=50)
 
     else:  # 'within' mode
         col1, col2 = st.columns(2)  
         with col1:
-            elo_lower_bound = st.number_input("Elo Lower Bound:", value=1200, step=50)
+            elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=50)
         with col2:
-            elo_upper_bound = st.number_input("Elo Upper Bound:", value=1600, step=50)
+            elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
 
 # Data Filtering 
 filtered_df = df.copy()
 
+# this if statement applies the filtering logic to the dataframe based on the selected options.
 if elo_mode == "above":
     filtered_df = filtered_df[filtered_df['Elo'] > elo_threshold]
 elif elo_mode == "below":
