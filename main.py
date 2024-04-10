@@ -3,7 +3,9 @@ from eloCalculations import EloCalculator
 from fight import FightEntity
 from fighter import FighterEntity
 from datetime import datetime
-
+import seaborn as sns 
+import matplotlib.pyplot as plt
+import pandas as pd 
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
@@ -168,3 +170,44 @@ print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # 1313
 print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # 1343
 print(_fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # 1247
 print(_fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # 1191
+
+
+def reformat_date(date_str):
+    """Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
+    if '-' in date_str: 
+        parts = date_str.split('-')
+        return '-'.join(parts[1:])  # Re-assemble as MM-DD-YYYY
+    else:
+        return date_str  # No change needed
+
+
+
+data = []  # Will collect data for the graph
+
+# for fighter_name, fighter in _fighters.items():
+#     for fight_date, elo in fighter.fighterEloHashMap.items():
+#         data.append({
+#             'Fighter': fighter_name,
+#             'Date': fight_date,  
+#             'Elo': elo
+#         })
+
+for fighter_name, fighter in _fighters.items():
+    for fight_date, elo in fighter.fighterEloHashMap.items():
+        print(fight_date)
+        data.append({
+            'Fighter': fighter_name,
+            'Date': reformat_date(fight_date),  # Apply reformatting
+            'Elo': elo
+        })
+
+
+# Create the DataFrame
+df = pd.DataFrame(data)
+df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
+
+# Create the Seaborn Line Plot
+sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time") 
+plt.show()
