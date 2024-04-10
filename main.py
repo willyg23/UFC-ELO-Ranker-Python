@@ -293,19 +293,79 @@ if "weight_class" in selected_features:
     # ------ Conditional Display of Filtering Components Section End -----
 # ----- filtering features section End ----- 
 
+
 # Figure Size
-plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
+plt.figure(figsize=(10, 6))  
 
 # Pagination Logic
-fighters_per_page = 10  # Control how many fighters to show at once
-current_page = 0
-start_index = current_page * fighters_per_page
-end_index = start_index + fighters_per_page
-fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+current_page = 0  
+fighters_per_page = 15 
 
-# Seaborn Plot (with limited legend entries)
+# *** Text on Hover Implementation ***
+hover_label = st.empty()  
+fig = plt.gcf()
+
+def annotate(x, y):
+    print("Hover at:", x, y) 
+    closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().argmin()]['Fighter'].iloc[0]
+    hover_label.text(x, y, closest_fighter)  
+    fig.canvas.draw_idle()
+
+
+fig.canvas.mpl_connect('motion_notify_event', annotate)  
+
+# --- Create initial plot --- 
 sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-plt.legend(labels=fighters_to_display) 
 plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time") 
-st.pyplot(plt)
+plt.title("Fighter Elo over Time")
+
+legend_container = st.empty() # Placeholder for the legend
+fighters_label = st.empty()   # Placeholder for fighter names
+
+# --- Function to update displayed fighters and legend ---
+def update_display():
+    start_index = current_page * fighters_per_page
+    end_index = start_index + fighters_per_page
+    fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+
+    # Update the legend
+    legend = plt.legend(labels=fighters_to_display)  
+    # legend_container.pyplot(legend)  
+    legend_container.empty()  # Clear the previous legend
+    legend_container.pyplot(fig) # Display the figure with updated legend
+
+    # Update the fighter names label  
+    fighters_label.text("\n".join(fighters_to_display)) 
+
+update_display()  # Initial display
+
+if st.button("Previous Page"):
+    if current_page > 0:  
+        current_page -= 1
+        update_display()  # Update graph when page changes 
+if st.button("Next Page"):
+    current_page += 1
+    update_display()  
+
+fig.canvas.mpl_connect('motion_notify_event', annotate)  
+# # Figure Size
+# plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
+
+# # Pagination Logic
+# fighters_per_page = 10  # Control how many fighters to show at once
+# current_page = 0
+# start_index = current_page * fighters_per_page
+# end_index = start_index + fighters_per_page
+# fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+
+
+
+
+# # plt.scatter(filtered_df['Date'], filtered_df['Elo'], s=10) # Adds dots on each Elo change. Looks ugly so i commneted this line out.
+
+# # Seaborn Plot (with limited legend entries)
+# sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+# plt.legend(labels=fighters_to_display) 
+# plt.xticks(rotation=45) 
+# plt.title("Fighter Elo over Time") 
+# st.pyplot(plt)
