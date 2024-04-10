@@ -219,6 +219,14 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')
 # Streamlit Section
 st.title("Fighter Elo over Time")
 
+# ----- Filtering Features Menu Section -----
+
+features = ["Elo Range"]  # Add more feature names here
+selected_features = st.multiselect("Select Filtering Features:", features)
+
+# ----- Filtering Features Menu Section End -----
+
+
 # ----- Search Section ----- 
 
 # fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
@@ -254,29 +262,43 @@ st.title("Fighter Elo over Time")
 
 #try 2 - data paganation
 
-# User Input
-elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
+# Conditional Display of Filtering Components
+# this is supposed to check if "Elo Range" is within features, not if features is ONLY "Elo Range". Not exactly sure which one it is right now.
+# ... (Streamlit Setup)
 
+elo_mode = None  
+elo_lower_bound = None
+elo_upper_bound = None
+
+
+# this if statement handles the UI components for getting filter input from the user.
+if "Elo Range" in selected_features:
+    st.subheader("Elo Filtering") 
+    elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
+
+    if elo_mode in ["above", "below"]:  # Combine cases for 'above' and 'below'
+        elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1300 if elo_mode == "above" else 1100, step=50)
+
+    else:  # 'within' mode
+        col1, col2 = st.columns(2)  
+        with col1:
+            elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=50)
+        with col2:
+            elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
+
+# Data Filtering 
+filtered_df = df.copy()
+
+# this if statement applies the filtering logic to the dataframe based on the selected options.
 if elo_mode == "above":
-    elo_threshold = st.number_input("Elo Threshold (above):", value=1300, step=50)
-
+    filtered_df = filtered_df[filtered_df['Elo'] > elo_threshold]
 elif elo_mode == "below":
-    elo_threshold = st.number_input("Elo Threshold (below):", value=1125, step=50)
-
+    filtered_df = filtered_df[filtered_df['Elo'] < elo_threshold]
 else:  # 'within' mode
-    col1, col2 = st.columns(2)  # Create two columns for input boxes
-    with col1:
-        elo_lower_bound = st.number_input("Elo Lower Bound:", value=1200, step=50)
-    with col2:
-        elo_upper_bound = st.number_input("Elo Upper Bound:", value=1600, step=50)
+    filtered_df = filtered_df[(filtered_df['Elo'] >= elo_lower_bound) & (filtered_df['Elo'] <= elo_upper_bound)] 
 
-# Data Filtering
-if elo_mode == "above":
-    filtered_df = df[df['Elo'] > elo_threshold] 
-elif elo_mode == "below":
-    filtered_df = df[df['Elo'] < elo_threshold] 
-else:  # 'within' mode
-    filtered_df = df[(df['Elo'] >= elo_lower_bound) & (df['Elo'] <= elo_upper_bound)] 
+# ... (Plotting)
+
 # Figure Size
 plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
 
