@@ -224,7 +224,7 @@ st.title("Fighter Elo over Time")
 
 # ----- Filtering Features Menu Section Start-----
 
-features = ["Elo Range", "weight_class"] # Add "weight_class" to features
+features = ["Elo Range", "weight_class", "Search By Fighter Name"] # Add "weight_class" to features
 selected_features = st.multiselect("Select Filtering Features:", features)
 
 # ----- Filtering Features Menu Section End -----
@@ -244,128 +244,131 @@ selected_features = st.multiselect("Select Filtering Features:", features)
 
 # ----- filtering features section Start----- 
     # ------ Conditional Display of Filtering Components Section Start -----
-        # ----- Elo filtering mode section Start -----
-
 elo_mode = None  
 elo_lower_bound = None
 elo_upper_bound = None
-
 filtered_df = df.copy() # so we can maintain the orignal df for whenever we need it.
 
-# this is supposed to check if "Elo Range" is within features, not if features is ONLY "Elo Range".
-if "Elo Range" in selected_features:
-    st.subheader("Elo Filtering") 
-    elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
+        # ----- Search By Fighter Name section Start -----
+# if "Search By Fighter Name" in selected_features:
+#     selected_features = ["Search By Fighter Name"]
+#     fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
+#     filtered_df = df[df['Fighter'] == fighterSearchVar]
+if "Search By Fighter Name" in selected_features:
+    selected_features = ["Search By Fighter Name"]
+    fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
+    filtered_df = df[df['Fighter'] == fighterSearchVar]
 
-    if elo_mode in ["above", "below"]:  # Combine cases for 'above' and 'below'
-        elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1300 if elo_mode == "above" else 1100, step=50)
+    # --- Create plot for searched fighter --- 
+    plt.figure(figsize=(10, 6)) # Create a new figure 
+    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+    plt.xticks(rotation=45) 
+    plt.title(f"Fighter Elo over Time: {fighterSearchVar}") # Dynamic title
 
+    legend_container = st.empty() # Placeholder for the legend
+
+    # ... (Update `update_display` function to only handle legend if needed)
+
+    st.pyplot(plt) # Display using Streamlit
+        # ----- Search By Fighter Name section End -----
+
+            # ----- Elo filtering mode section Start -----
+else: # 'if Search Fighter By Name' isn't selected
+            # ----- Elo filtering mode section Start -----
+    # this is supposed to check if "Elo Range" is within features, not if features is ONLY "Elo Range".
+    if "Elo Range" in selected_features:
+        st.subheader("Elo Filtering") 
+        elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
+
+        if elo_mode in ["above", "below"]:  # Combine cases for 'above' and 'below'
+            elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1300 if elo_mode == "above" else 1100, step=50)
+
+        else:  # 'within' mode
+            col1, col2 = st.columns(2)  
+            with col1:
+                elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=50)
+            with col2:
+                elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
+
+    # Data Filtering 
+
+    # this if statement applies the filtering logic to the dataframe based on the selected options.
+    if elo_mode == "above":
+        filtered_df = filtered_df[filtered_df['Elo'] > elo_threshold]
+    elif elo_mode == "below":
+        filtered_df = filtered_df[filtered_df['Elo'] < elo_threshold]
     else:  # 'within' mode
-        col1, col2 = st.columns(2)  
-        with col1:
-            elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=50)
-        with col2:
-            elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
+        filtered_df = filtered_df[(filtered_df['Elo'] >= elo_lower_bound) & (filtered_df['Elo'] <= elo_upper_bound)] 
 
-# Data Filtering 
+            # ----- Elo filtering mode section End -----
+            # ----- weight_classes filtering mode section Start -----
 
-# this if statement applies the filtering logic to the dataframe based on the selected options.
-if elo_mode == "above":
-    filtered_df = filtered_df[filtered_df['Elo'] > elo_threshold]
-elif elo_mode == "below":
-    filtered_df = filtered_df[filtered_df['Elo'] < elo_threshold]
-else:  # 'within' mode
-    filtered_df = filtered_df[(filtered_df['Elo'] >= elo_lower_bound) & (filtered_df['Elo'] <= elo_upper_bound)] 
+    if "weight_class" in selected_features:
+        weight_classes = df['weight_class'].unique().tolist()  # Get unique weight_classes
+        selected_weight_class = st.selectbox("Select weight_class:", weight_classes)
+        filtered_df = filtered_df[filtered_df['weight_class'] == selected_weight_class]
 
-        # ----- Elo filtering mode section End -----
-        # ----- weight_classes filtering mode section Start -----
-
-if "weight_class" in selected_features:
-    weight_classes = df['weight_class'].unique().tolist()  # Get unique weight_classes
-    selected_weight_class = st.selectbox("Select weight_class:", weight_classes)
-    filtered_df = filtered_df[filtered_df['weight_class'] == selected_weight_class]
-
-# print(df.columns)
-        # ----- weight_classes filtering mode section End -----
-
-
-
-    # ------ Conditional Display of Filtering Components Section End -----
-# ----- filtering features section End ----- 
-
-
-# Figure Size
-plt.figure(figsize=(10, 6))  
-
-# Pagination Logic
-current_page = 0  
-fighters_per_page = 15 
-
-# *** Text on Hover Implementation ***
-hover_label = st.empty()  
-fig = plt.gcf()
-
-def annotate(x, y):
-    print("Hover at:", x, y) 
-    closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().argmin()]['Fighter'].iloc[0]
-    hover_label.text(x, y, closest_fighter)  
-    fig.canvas.draw_idle()
-
-
-fig.canvas.mpl_connect('motion_notify_event', annotate)  
-
-# --- Create initial plot --- 
-sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time")
-
-legend_container = st.empty() # Placeholder for the legend
-fighters_label = st.empty()   # Placeholder for fighter names
-
-# --- Function to update displayed fighters and legend ---
-def update_display():
-    start_index = current_page * fighters_per_page
-    end_index = start_index + fighters_per_page
-    fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
-
-    # Update the legend
-    legend = plt.legend(labels=fighters_to_display)  
-    # legend_container.pyplot(legend)  
-    legend_container.empty()  # Clear the previous legend
-    legend_container.pyplot(fig) # Display the figure with updated legend
-
-    # Update the fighter names label  
-    fighters_label.text("\n".join(fighters_to_display)) 
-
-update_display()  # Initial display
-
-if st.button("Previous Page"):
-    if current_page > 0:  
-        current_page -= 1
-        update_display()  # Update graph when page changes 
-if st.button("Next Page"):
-    current_page += 1
-    update_display()  
-
-fig.canvas.mpl_connect('motion_notify_event', annotate)  
-# # Figure Size
-# plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
-
-# # Pagination Logic
-# fighters_per_page = 10  # Control how many fighters to show at once
-# current_page = 0
-# start_index = current_page * fighters_per_page
-# end_index = start_index + fighters_per_page
-# fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+    # print(df.columns)
+            # ----- weight_classes filtering mode section End -----
 
 
 
 
-# # plt.scatter(filtered_df['Date'], filtered_df['Elo'], s=10) # Adds dots on each Elo change. Looks ugly so i commneted this line out.
+        # ------ Conditional Display of Filtering Components Section End -----
+    # ----- filtering features section End ----- 
 
-# # Seaborn Plot (with limited legend entries)
-# sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-# plt.legend(labels=fighters_to_display) 
-# plt.xticks(rotation=45) 
-# plt.title("Fighter Elo over Time") 
-# st.pyplot(plt)
+
+    # Figure Size
+    plt.figure(figsize=(10, 6))  
+
+    # Pagination Logic
+    current_page = 0  
+    fighters_per_page = 15 
+
+    # *** Text on Hover Implementation ***
+    hover_label = st.empty()  
+    fig = plt.gcf()
+
+    def annotate(x, y):
+        print("Hover at:", x, y) 
+        closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().argmin()]['Fighter'].iloc[0]
+        hover_label.text(x, y, closest_fighter)  
+        fig.canvas.draw_idle()
+
+
+    fig.canvas.mpl_connect('motion_notify_event', annotate)  
+
+    # --- Create initial plot --- 
+    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+    plt.xticks(rotation=45) 
+    plt.title("Fighter Elo over Time")
+
+    legend_container = st.empty() # Placeholder for the legend
+    # fighters_label = st.empty()   # Placeholder for fighter names # displays fighter names outside of graph
+
+    # --- Function to update displayed fighters and legend ---
+    def update_display():
+        start_index = current_page * fighters_per_page
+        end_index = start_index + fighters_per_page
+        fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+
+        # Update the legend
+        legend = plt.legend(labels=fighters_to_display)  
+        # legend_container.pyplot(legend)  
+        legend_container.empty()  # Clear the previous legend
+        legend_container.pyplot(fig) # Display the figure with updated legend
+
+        # Update the fighter names label  
+        # fighters_label.text("\n".join(fighters_to_display)) # displays fighter names outside of graph
+
+    update_display()  # Initial display
+
+    if st.button("Previous Page"):
+        if current_page > 0:  
+            current_page -= 1
+            update_display()  # Update graph when page changes 
+    if st.button("Next Page"):
+        current_page += 1
+        update_display()  
+
+    fig.canvas.mpl_connect('motion_notify_event', annotate)  
