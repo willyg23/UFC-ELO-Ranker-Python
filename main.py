@@ -206,18 +206,21 @@ for fighter_name, fighter in fighters.items():
 df = pd.DataFrame(data)
 df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
 
-# # Create the Seaborn Line Plot
-# sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
-# plt.xticks(rotation=45) 
-# plt.title("Fighter Elo over Time") 
-# plt.show()
 
+#first graph impl
+'''
+sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time") 
+plt.show()
+'''
 
-
-# ---SEARCH FUNCTIONALITY---
 
 # Streamlit Section
 st.title("Fighter Elo over Time")
+
+# ----- Search Section ----- 
+'''
 fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
 
 filtered_df = df[df['Fighter'] == fighterSearchVar]
@@ -225,3 +228,58 @@ sns.lineplot(data=filtered_df, x='Date', y='Elo')
 plt.xticks(rotation=45) 
 plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
 st.pyplot(plt) # Display using Streamlit
+'''
+# ----- search section end -----
+
+# ----- filtering section ----- 
+
+#try 1 - works but crashes the app and is slow asf
+'''
+# User Input
+elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
+above_or_below = st.selectbox("Above or Below?", ["above", "below"])
+
+# Data Filtering
+if above_or_below == "above":
+    filtered_df = df[df['Elo'] > elo_threshold] 
+else:
+    filtered_df = df[df['Elo'] < elo_threshold] 
+
+# Seaborn Plot
+sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter') 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time") 
+st.pyplot(plt) 
+'''
+
+#try 2 - data paganation
+
+# User Input
+elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
+above_or_below = st.selectbox("Above or Below?", ["above", "below"])
+fighters_per_page = 10  # Control how many fighters to show at once
+
+# Data Filtering
+if above_or_below == "above":
+    filtered_df = df[df['Elo'] > elo_threshold] 
+else:
+    filtered_df = df[df['Elo'] < elo_threshold] 
+
+# Figure Size
+plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
+
+# Pagination Logic
+current_page = 0
+start_index = current_page * fighters_per_page
+end_index = start_index + fighters_per_page
+fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+
+# Seaborn Plot (with limited legend entries)
+sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+plt.legend(labels=fighters_to_display) 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time") 
+st.pyplot(plt) 
+
+
+# ----- filtering section end ----- 
