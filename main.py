@@ -208,49 +208,49 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')
 
 
 #first graph impl
-'''
-sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
-plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time") 
-plt.show()
-'''
+
+# sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+# plt.xticks(rotation=45) 
+# plt.title("Fighter Elo over Time") 
+# plt.show()
+
 
 
 # Streamlit Section
 st.title("Fighter Elo over Time")
 
 # ----- Search Section ----- 
-'''
-fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
 
-filtered_df = df[df['Fighter'] == fighterSearchVar]
-sns.lineplot(data=filtered_df, x='Date', y='Elo')  
-plt.xticks(rotation=45) 
-plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
-st.pyplot(plt) # Display using Streamlit
-'''
+# fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
+
+# filtered_df = df[df['Fighter'] == fighterSearchVar]
+# sns.lineplot(data=filtered_df, x='Date', y='Elo')  
+# plt.xticks(rotation=45) 
+# plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
+# st.pyplot(plt) # Display using Streamlit
+
 # ----- search section end -----
 
 # ----- filtering section ----- 
 
 #try 1 - works but crashes the app and is slow asf
-'''
-# User Input
-elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
-above_or_below = st.selectbox("Above or Below?", ["above", "below"])
 
-# Data Filtering
-if above_or_below == "above":
-    filtered_df = df[df['Elo'] > elo_threshold] 
-else:
-    filtered_df = df[df['Elo'] < elo_threshold] 
+# # User Input
+# elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
+# above_or_below = st.selectbox("Above or Below?", ["above", "below"])
 
-# Seaborn Plot
-sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter') 
-plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time") 
-st.pyplot(plt) 
-'''
+# # Data Filtering
+# if above_or_below == "above":
+#     filtered_df = df[df['Elo'] > elo_threshold] 
+# else:
+#     filtered_df = df[df['Elo'] < elo_threshold] 
+
+# # Seaborn Plot
+# sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter') 
+# plt.xticks(rotation=45) 
+# plt.title("Fighter Elo over Time") 
+# st.pyplot(plt) 
+
 
 #try 2 - data paganation
 
