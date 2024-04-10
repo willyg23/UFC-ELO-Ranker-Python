@@ -96,9 +96,10 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.r_age,
             "losses": 0   
         }
+        # add the fighter  entry to the fighters hash map
         fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
 
-    # Link the entity to the fight
+    # Set the fight entity's r_fighter_entity field
     fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
 
@@ -131,9 +132,10 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.b_age,  
             "losses": 0   
         }
+        # add the fighter  entry to the fighters hash map
         fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
 
-    # Link the entity to the fight
+    # Set the fight entity's b_fighter_entity field
     fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string] 
 
 #------------------------------------------end of the for loop that creates the fight list and fighters hashmap
@@ -203,9 +205,9 @@ for fighter_name, fighter in fighters.items():
             'weight_class': fighter.weight_classes[0] 
         })
 
-# Create the DataFrame
-df = pd.DataFrame(data)
-df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
+
+df = pd.DataFrame(data) # Create the dataframe
+df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns into datetime objects
 
 
 #first graph impl
@@ -266,7 +268,6 @@ if "Elo Range" in selected_features:
             elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
 
 # Data Filtering 
-
 
 # this if statement applies the filtering logic to the dataframe based on the selected options.
 if elo_mode == "above":
