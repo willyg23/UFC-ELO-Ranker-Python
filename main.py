@@ -184,13 +184,7 @@ def reformat_date(date_str):
 
 data = []  # Will collect data for the graph
 
-# for fighter_name, fighter in _fighters.items():
-#     for fight_date, elo in fighter.fighterEloHashMap.items():
-#         data.append({
-#             'Fighter': fighter_name,
-#             'Date': fight_date,  
-#             'Elo': elo
-#         })
+
 
 for fighter_name, fighter in _fighters.items():
     for fight_date, elo in fighter.fighterEloHashMap.items():
@@ -201,7 +195,6 @@ for fighter_name, fighter in _fighters.items():
             'Elo': elo
         })
 
-
 # Create the DataFrame
 df = pd.DataFrame(data)
 df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
@@ -211,3 +204,11 @@ sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter')
 plt.xticks(rotation=45) 
 plt.title("Fighter Elo over Time") 
 plt.show()
+
+# for fighter_name, fighter in _fighters.items():
+#     for fight_date, elo in fighter.fighterEloHashMap.items():
+#         data.append({
+#             'Fighter': fighter_name,
+#             'Date': fight_date,  
+#             'Elo': elo
+#         })
