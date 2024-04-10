@@ -5,7 +5,8 @@ from fighter import FighterEntity
 from datetime import datetime
 import seaborn as sns 
 import matplotlib.pyplot as plt
-import pandas as pd 
+import pandas as pd
+import streamlit as st
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
@@ -212,14 +213,15 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')
 # plt.show()
 
 
+
 # ---SEARCH FUNCTIONALITY---
-fighterSearchVar = "Drew Dober"  
 
-# Filter the DataFrame based on the search term
-filtered_df = df[df['Fighter'] == fighterSearchVar] 
+# Streamlit Section
+st.title("Fighter Elo over Time")
+fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
 
-# Create the new line plot with filtered data
-sns.lineplot(data=filtered_df, x='Date', y='Elo')  # No need for 'hue' with a single fighter
+filtered_df = df[df['Fighter'] == fighterSearchVar]
+sns.lineplot(data=filtered_df, x='Date', y='Elo')  
 plt.xticks(rotation=45) 
 plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
-plt.show()
+st.pyplot(plt) # Display using Streamlit
