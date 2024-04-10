@@ -3,37 +3,43 @@ from eloCalculations import EloCalculator
 from fight import FightEntity
 from fighter import FighterEntity
 from datetime import datetime
-
+import seaborn as sns 
+import matplotlib.pyplot as plt
+import pandas as pd 
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
 
     data = load['items']
+
 # Initialize the eloCalculator object
-elo_calculator_object = EloCalculator()  # Assuming you have the EloCalculator class defined
+elo_calculator_object = EloCalculator()  
 
 # Python dictionary for the 'eloHashMap' concept
 elo_hash_map = {}  # Key: FighterFirstName FighterLastName-month-day-year, Value: ELO
 
 # Dictionaries for Fighters and Fights
-_fighters = {}  # Mapping fighter names to FighterEntity objects
-_fights = []  # List to hold FightEntity objects
+fighters = {}  # Mapping fighter names to FighterEntity objects. Key = a string of the fighter's name  value = that fighter's fighterEntity
+#^note that this could get messed up if there's ever fighters with duplicate names, which our dataset fortunately doesn't have.
+#Dealing with duplicate names would be a good feature to introduce in the future.
+
+fights = []  # List to hold FightEntity objects
 
 
-testT = 0
+
 for i in range(len(data) - 1, -1, -1):
-    testT = testT + 1
+    
     fight_entity = FightEntity()  
 
    
-    fight_entity.r_fighter_string = data[i]['R_fighter']
-    fight_entity.b_fighter_string = data[i]['B_fighter']
+    fight_entity.rfighter_string = data[i]['Rfighter']
+    fight_entity.bfighter_string = data[i]['Bfighter']
 
-    # Check if fighters exist in the '_fighters' dictionary
-    if fight_entity.b_fighter_string in _fighters:
-        fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string]
-    if fight_entity.r_fighter_string in _fighters:
-        fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
+    # Check if fighters exist in the 'fighters' dictionary
+    if fight_entity.bfighter_string in fighters:
+        fight_entity.bfighter_entity = fighters[fight_entity.bfighter_string]
+    if fight_entity.rfighter_string in fighters:
+        fight_entity.rfighter_entity = fighters[fight_entity.rfighter_string]
 
     fight_entity.winner = data[i]['Winner']
 
@@ -57,12 +63,12 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity.month = parsed_date.month
     fight_entity.day = parsed_date.day
 
-    _fights.append(fight_entity)  # Add the entity to the fights list
+    fights.append(fight_entity)  # Add the entity to the fights list
 
 
-    if _fighters.get(fight_entity.r_fighter_string) is None:  # Check if fighter exists
+    if fighters.get(fight_entity.rfighter_string) is None:  # Check if fighter exists
         new_entry = {
-            "name": fight_entity.r_fighter_string,
+            "name": fight_entity.rfighter_string,
             "weight_classes": [fight_entity.weight_class],   
             "gender": data[i]["gender"],
             "current_win_streak": data[i]["R_current_win_streak"],
@@ -89,15 +95,15 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.r_age,
             "losses": 0   
         }
-        _fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.rfighter_string] = FighterEntity(**new_entry)
 
     # Link the entity to the fight
-    fight_entity.r_fighter_entity = _fighters[fight_entity.r_fighter_string]
+    fight_entity.rfighter_entity = fighters[fight_entity.rfighter_string]
 
 
-    if _fighters.get(fight_entity.b_fighter_string) is None: 
+    if fighters.get(fight_entity.bfighter_string) is None: 
         new_entry = {
-            "name": fight_entity.b_fighter_string,
+            "name": fight_entity.bfighter_string,
             "weight_classes": [fight_entity.weight_class],   
             "gender": data[i]["gender"],
             "current_win_streak": data[i]["B_current_win_streak"],
@@ -124,15 +130,17 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.b_age,  
             "losses": 0   
         }
-        _fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.bfighter_string] = FighterEntity(**new_entry)
 
     # Link the entity to the fight
-    fight_entity.b_fighter_entity = _fighters[fight_entity.b_fighter_string] 
+    fight_entity.bfighter_entity = fighters[fight_entity.bfighter_string] 
 
-#------------------------------------------end of for loop
-print('Creation of _fighters hasmap and _fights list has been completed! ')
-print('Length of the _fighters hashmap:', len(_fighters))  # Using len() for dictionary length
-print('Length of the _fights list:', len(_fights))        # Using len() for list length
+#------------------------------------------end of the for loop that creates the fight list and fighters hashmap
+
+
+print('Creation of fighters hasmap and fights list has been completed! ')
+print('Length of the fighters hashmap:', len(fighters))  # Using len() for dictionary length
+print('Length of the fights list:', len(fights))        # Using len() for list length
 
 
 _modifiers = []  # Create an empty list
@@ -144,27 +152,61 @@ _modifiers.append(ko_tko_input)
 
 
 
-date_of_fight = ""  # Empty string for now
+date_offight = ""  # Empty string for now
 
 
-for fight in _fights:
-    if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
-        date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
-        elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, _fighters, _modifiers, date_of_fight)
+for fight in fights:
+    if fight.winner is not None and fight.rfighter_string is not None and fight.bfighter_string is not None:
+        date_offight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
+        elo_calculator_object.setNewRating(fight.winner, fight.rfighter_string, fight.bfighter_string, fighters, _modifiers, date_offight)
 
 # 1. Sorting Fighters
-sorted_fighters = sorted(_fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
+sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
 
 # 2. Iteration and Ranking
 # have the highest ranked fighter print last, so in the terminal, you'll see the highest ranked fighters first.
 rank = 1749  # Start rank at 1749 (amount of fighters)
-for fighter_name, fighter_entity in sorted(sorted_fighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
+for fighter_name, fighter_entity in sorted(sortedfighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
     print(f'Fighter: {fighter_name} Elo: {fighter_entity.elo[-1]} Win/Loss ratio: W{fighter_entity.wins} L{fighter_entity.losses} Rank: {rank}')
     rank -= 1  # decrement rank
 
 print("eloHashMap Test") 
 print("fighterEloHashMap test:")
-print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # 1313
-print(_fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # 1343
-print(_fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # 1247
-print(_fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # 1191
+print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # 1313
+print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # 1343
+print(fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # 1247
+print(fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # 1191
+
+
+def reformat_date(date_str):
+    """Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
+    if '-' in date_str: 
+        parts = date_str.split('-')
+        return '-'.join(parts[1:])  # Re-assemble as MM-DD-YYYY
+    else:
+        return date_str  # No change needed
+
+
+
+data = []  # Will collect data for the graph
+
+
+
+for fighter_name, fighter in fighters.items():
+    for fight_date, elo in fighter.fighterEloHashMap.items():
+        print(fight_date)
+        data.append({
+            'Fighter': fighter_name,
+            'Date': reformat_date(fight_date),  # Apply reformatting
+            'Elo': elo
+        })
+
+# Create the DataFrame
+df = pd.DataFrame(data)
+df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
+
+# Create the Seaborn Line Plot
+sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+plt.xticks(rotation=45) 
+plt.title("Fighter Elo over Time") 
+plt.show()
