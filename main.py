@@ -1,4 +1,6 @@
 import json
+
+import tensorflow as tf
 from eloCalculations import EloCalculator
 from fight import FightEntity
 from fighter import FighterEntity
@@ -7,6 +9,35 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
+from machineLearningCode import model, numerical_features, categorical_features, encoded_data, create_input_data, process_prediction  # Import necessary components
+ 
+ 
+# Load the model when your app starts (you might do this only once)
+@st.cache_resource  # Optionally cache the model to avoid reloading on every interaction
+def load_model():
+    model = tf.keras.models.load_model('my_ufc_model.h5')  # Change to your saved model file
+    return model 
+
+model = tf.keras.models.load_model('my_ufc_model.h5')
+
+# loaded_model = load_model() 
+
+
+def predict_fight_winner(fighter1, fighter2): 
+    """Processes input, loads model, and generates prediction"""
+    # 1. Create input data from fighter1 and fighter2 based on your ML model's  requirements.
+    input_data = create_input_data(fighter1, fighter2, df, numerical_features, categorical_features, encoded_data)
+
+    # 2. Load the model
+    loaded_model = load_model()  # Update with your model loading function
+
+    # 3. Make Prediction
+    prediction = loaded_model.predict(input_data)
+
+    # 4. Process prediction and return
+    predicted_winner = process_prediction(prediction)
+    return predicted_winner
+
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
@@ -374,3 +405,13 @@ else: # 'if Search Fighter By Name' isn't selected
         update_display()  
 
     fig.canvas.mpl_connect('motion_notify_event', annotate)  
+
+# ----- Fight Predictor Section Start -----
+# Inside your 'Predict' button's event handler:
+if st.button("Predict"):
+    fighter1 = st.text_input("Enter Fighter 1 Name")
+    fighter2 = st.text_input("Enter Fighter 2 Name")
+
+    predicted_winner = predict_fight_winner(fighter1, fighter2)
+    st.write("Predicted Winner:", predicted_winner)
+# ----- Fight Predictor Section End -----
