@@ -408,9 +408,19 @@ else: # 'if Search Fighter By Name' isn't selected
 
 # ----- Fight Predictor Section Start -----
 # Inside your 'Predict' button's event handler:
-if st.button("Predict"):
-    fighter1 = st.text_input("Enter Fighter 1 Name")
-    fighter2 = st.text_input("Enter Fighter 2 Name")
+if 'fighter1' not in st.session_state:
+    st.session_state.fighter1 = ''
+
+if 'fighter2' not in st.session_state:
+    st.session_state.fighter2 = ''
+
+st.text_input("Enter Fighter 1 Name", key='fighter1')
+st.text_input("Enter Fighter 2 Name", key='fighter2')
+
+# Dedicated Run Prediction Button
+if st.button("Run Prediction"):
+    fighter1 = st.session_state.fighter1
+    fighter2 = st.session_state.fighter2
 
     predicted_winner = predict_fight_winner(fighter1, fighter2)
     st.write("Predicted Winner:", predicted_winner)

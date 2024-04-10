@@ -6,11 +6,16 @@ from sklearn.preprocessing import OneHotEncoder
 # import matplotlib.pyplot as plt
 
 df = pd.read_csv('ufc_data.csv')
+print(df.columns)
+
 
 def create_input_data(fighter1, fighter2, df, numerical_features, categorical_features, encoded_data):
     # 1. Gather historical data
-    fighter1_data = df[df['R_fighter'] == fighter1] 
-    fighter2_data = df[df['B_fighter'] == fighter2] 
+    # fighter1_data = df[df['R_fighter'] == fighter1] 
+    # fighter2_data = df[df['B_fighter'] == fighter2] 
+    fighter1_data = df[(df['R_fighter'] == fighter1) | (df['B_fighter'] == fighter1)]
+    fighter2_data = df[(df['R_fighter'] == fighter2) | (df['B_fighter'] == fighter2)]
+
 
     # 2. Select numerical features (directly)
     fighter1_features = fighter1_data[numerical_features].copy()
