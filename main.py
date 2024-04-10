@@ -96,9 +96,10 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.r_age,
             "losses": 0   
         }
+        # add the fighter  entry to the fighters hash map
         fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
 
-    # Link the entity to the fight
+    # Set the fight entity's r_fighter_entity field
     fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
 
@@ -131,9 +132,10 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.b_age,  
             "losses": 0   
         }
+        # add the fighter  entry to the fighters hash map
         fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
 
-    # Link the entity to the fight
+    # Set the fight entity's b_fighter_entity field
     fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string] 
 
 #------------------------------------------end of the for loop that creates the fight list and fighters hashmap
@@ -199,12 +201,13 @@ for fighter_name, fighter in fighters.items():
         data.append({
             'Fighter': fighter_name,
             'Date': reformat_date(fight_date),  # Apply reformatting
-            'Elo': elo
+            'Elo': elo,
+            'weight_class': fighter.weight_classes[0] 
         })
 
-# Create the DataFrame
-df = pd.DataFrame(data)
-df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
+
+df = pd.DataFrame(data) # Create the dataframe
+df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns into datetime objects
 
 
 #first graph impl
@@ -219,15 +222,15 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')
 # Streamlit Section
 st.title("Fighter Elo over Time")
 
-# ----- Filtering Features Menu Section -----
+# ----- Filtering Features Menu Section Start-----
 
-features = ["Elo Range"]  # Add more feature names here
+features = ["Elo Range", "weight_class"] # Add "weight_class" to features
 selected_features = st.multiselect("Select Filtering Features:", features)
 
 # ----- Filtering Features Menu Section End -----
 
 
-# ----- Search Section ----- 
+# ----- Search Section Start ----- 
 
 # fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
 
@@ -239,39 +242,17 @@ selected_features = st.multiselect("Select Filtering Features:", features)
 
 # ----- search section end -----
 
-# ----- filtering section ----- 
-
-#try 1 - works but crashes the app and is slow asf
-
-# # User Input
-# elo_threshold = st.number_input("Elo Threshold:", value=1200, step=50)
-# above_or_below = st.selectbox("Above or Below?", ["above", "below"])
-
-# # Data Filtering
-# if above_or_below == "above":
-#     filtered_df = df[df['Elo'] > elo_threshold] 
-# else:
-#     filtered_df = df[df['Elo'] < elo_threshold] 
-
-# # Seaborn Plot
-# sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter') 
-# plt.xticks(rotation=45) 
-# plt.title("Fighter Elo over Time") 
-# st.pyplot(plt) 
-
-
-#try 2 - data paganation
-
-# Conditional Display of Filtering Components
-# this is supposed to check if "Elo Range" is within features, not if features is ONLY "Elo Range". Not exactly sure which one it is right now.
-# ... (Streamlit Setup)
+# ----- filtering features section Start----- 
+    # ------ Conditional Display of Filtering Components Section Start -----
+        # ----- Elo filtering mode section Start -----
 
 elo_mode = None  
 elo_lower_bound = None
 elo_upper_bound = None
 
+filtered_df = df.copy() # so we can maintain the orignal df for whenever we need it.
 
-# this if statement handles the UI components for getting filter input from the user.
+# this is supposed to check if "Elo Range" is within features, not if features is ONLY "Elo Range".
 if "Elo Range" in selected_features:
     st.subheader("Elo Filtering") 
     elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
@@ -287,7 +268,6 @@ if "Elo Range" in selected_features:
             elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
 
 # Data Filtering 
-filtered_df = df.copy()
 
 # this if statement applies the filtering logic to the dataframe based on the selected options.
 if elo_mode == "above":
@@ -297,7 +277,21 @@ elif elo_mode == "below":
 else:  # 'within' mode
     filtered_df = filtered_df[(filtered_df['Elo'] >= elo_lower_bound) & (filtered_df['Elo'] <= elo_upper_bound)] 
 
-# ... (Plotting)
+        # ----- Elo filtering mode section End -----
+        # ----- weight_classes filtering mode section Start -----
+
+if "weight_class" in selected_features:
+    weight_classes = df['weight_class'].unique().tolist()  # Get unique weight_classes
+    selected_weight_class = st.selectbox("Select weight_class:", weight_classes)
+    filtered_df = filtered_df[filtered_df['weight_class'] == selected_weight_class]
+
+# print(df.columns)
+        # ----- weight_classes filtering mode section End -----
+
+
+
+    # ------ Conditional Display of Filtering Components Section End -----
+# ----- filtering features section End ----- 
 
 # Figure Size
 plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
@@ -314,7 +308,4 @@ sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False)
 plt.legend(labels=fighters_to_display) 
 plt.xticks(rotation=45) 
 plt.title("Fighter Elo over Time") 
-st.pyplot(plt) 
-
-
-# ----- filtering section end ----- 
+st.pyplot(plt)
