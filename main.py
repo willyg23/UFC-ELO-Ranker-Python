@@ -5,7 +5,8 @@ from fighter import FighterEntity
 from datetime import datetime
 import seaborn as sns 
 import matplotlib.pyplot as plt
-import pandas as pd 
+import pandas as pd
+import streamlit as st
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
@@ -32,14 +33,14 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity = FightEntity()  
 
    
-    fight_entity.rfighter_string = data[i]['Rfighter']
-    fight_entity.bfighter_string = data[i]['Bfighter']
+    fight_entity.r_fighter_string = data[i]['R_fighter']
+    fight_entity.b_fighter_string = data[i]['B_fighter']
 
     # Check if fighters exist in the 'fighters' dictionary
-    if fight_entity.bfighter_string in fighters:
-        fight_entity.bfighter_entity = fighters[fight_entity.bfighter_string]
-    if fight_entity.rfighter_string in fighters:
-        fight_entity.rfighter_entity = fighters[fight_entity.rfighter_string]
+    if fight_entity.b_fighter_string in fighters:
+        fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string]
+    if fight_entity.r_fighter_string in fighters:
+        fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
     fight_entity.winner = data[i]['Winner']
 
@@ -66,9 +67,9 @@ for i in range(len(data) - 1, -1, -1):
     fights.append(fight_entity)  # Add the entity to the fights list
 
 
-    if fighters.get(fight_entity.rfighter_string) is None:  # Check if fighter exists
+    if fighters.get(fight_entity.r_fighter_string) is None:  # Check if fighter exists
         new_entry = {
-            "name": fight_entity.rfighter_string,
+            "name": fight_entity.r_fighter_string,
             "weight_classes": [fight_entity.weight_class],   
             "gender": data[i]["gender"],
             "current_win_streak": data[i]["R_current_win_streak"],
@@ -95,15 +96,15 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.r_age,
             "losses": 0   
         }
-        fighters[fight_entity.rfighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
 
     # Link the entity to the fight
-    fight_entity.rfighter_entity = fighters[fight_entity.rfighter_string]
+    fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
 
-    if fighters.get(fight_entity.bfighter_string) is None: 
+    if fighters.get(fight_entity.b_fighter_string) is None: 
         new_entry = {
-            "name": fight_entity.bfighter_string,
+            "name": fight_entity.b_fighter_string,
             "weight_classes": [fight_entity.weight_class],   
             "gender": data[i]["gender"],
             "current_win_streak": data[i]["B_current_win_streak"],
@@ -130,10 +131,10 @@ for i in range(len(data) - 1, -1, -1):
             "age": fight_entity.b_age,  
             "losses": 0   
         }
-        fighters[fight_entity.bfighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
 
     # Link the entity to the fight
-    fight_entity.bfighter_entity = fighters[fight_entity.bfighter_string] 
+    fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string] 
 
 #------------------------------------------end of the for loop that creates the fight list and fighters hashmap
 
@@ -156,9 +157,9 @@ date_offight = ""  # Empty string for now
 
 
 for fight in fights:
-    if fight.winner is not None and fight.rfighter_string is not None and fight.bfighter_string is not None:
+    if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
         date_offight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
-        elo_calculator_object.setNewRating(fight.winner, fight.rfighter_string, fight.bfighter_string, fighters, _modifiers, date_offight)
+        elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, fighters, _modifiers, date_offight)
 
 # 1. Sorting Fighters
 sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
@@ -205,8 +206,22 @@ for fighter_name, fighter in fighters.items():
 df = pd.DataFrame(data)
 df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y') 
 
-# Create the Seaborn Line Plot
-sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+# # Create the Seaborn Line Plot
+# sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
+# plt.xticks(rotation=45) 
+# plt.title("Fighter Elo over Time") 
+# plt.show()
+
+
+
+# ---SEARCH FUNCTIONALITY---
+
+# Streamlit Section
+st.title("Fighter Elo over Time")
+fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
+
+filtered_df = df[df['Fighter'] == fighterSearchVar]
+sns.lineplot(data=filtered_df, x='Date', y='Elo')  
 plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time") 
-plt.show()
+plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
+st.pyplot(plt) # Display using Streamlit
