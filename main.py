@@ -294,55 +294,52 @@ if "weight_class" in selected_features:
 # ----- filtering features section End ----- 
 
 
-
 # Figure Size
 plt.figure(figsize=(10, 6))  
 
 # Pagination Logic
-current_page = 0  # Initialize starting page
+current_page = 0  
 fighters_per_page = 15 
-start_index = current_page * fighters_per_page
-end_index = start_index + fighters_per_page
-fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
-
-if st.button("Previous Page"):
-    if current_page > 0:  # Only decrement if we're not already on page 0
-        current_page -= 1 
-if st.button("Next Page"):
-    current_page += 1
-
-
-# Seaborn Plot 
-sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-plt.legend(labels=fighters_to_display) 
-plt.xticks(rotation=45) 
-plt.title("Fighter Elo over Time") 
 
 # *** Text on Hover Implementation ***
 hover_label = st.empty()  
-fig = plt.gcf() # Get the current figure
+fig = plt.gcf() 
 
-# def annotate(x, y):
-#     print("Hover at:", x, y)
-#     # i have no idea why there is code in japanese here. I have even less of an idea how this even runs. Never asking gemini to help me with coding again LMAO.
-#     closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().いちばんすくない()]['Fighter'].iloc[0] 
-#     hover_label.text(x, y, closest_fighter)  
-#     fig.canvas.draw_idle()
 def annotate(x, y):
     print("Hover at:", x, y) 
-    closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().argmin()]['Fighter'].iloc[0] 
+    closest_fighter = filtered_df[filtered_df['Elo'].abs().sub(y).abs().argmin()]['Fighter'].iloc[0]
     hover_label.text(x, y, closest_fighter)  
     fig.canvas.draw_idle()
 
-    
+
+# --- Pagination and Plotting logic --- 
+def update_graph():  # Create a function to make updates easier
+    start_index = current_page * fighters_per_page
+    end_index = start_index + fighters_per_page
+    fighters_to_display = filtered_df['Fighter'].iloc[start_index:end_index].unique()
+
+    # Clear existing plot elements 
+    plt.clf() 
+
+    # Seaborn Plot 
+    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
+    plt.legend(labels=fighters_to_display)  # Update legend 
+    plt.xticks(rotation=45) 
+    plt.title("Fighter Elo over Time")
+
+    st.pyplot(fig) 
+
+update_graph()  # Initial graph generation
+
+if st.button("Previous Page"):
+    if current_page > 0:  
+        current_page -= 1
+        update_graph()  # Update graph when page changes 
+if st.button("Next Page"):
+    current_page += 1
+    update_graph()  
 
 fig.canvas.mpl_connect('motion_notify_event', annotate)  
-
-# Display using Streamlit
-st.pyplot(fig) 
-
-
-
 # # Figure Size
 # plt.figure(figsize=(10, 6))  # Adjust these dimensions as needed
 
