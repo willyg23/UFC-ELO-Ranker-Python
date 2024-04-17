@@ -180,7 +180,7 @@ sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reve
 
 # 2. Iteration and Ranking
 # have the highest ranked fighter print last, so in the terminal, you'll see the highest ranked fighters first.
-rank = 1749  # Start rank at 1749 (amount of fighters)
+rank = len(fighters)  # initialize rank to the length of the fighters hashmap, which is currently 1749
 for fighter_name, fighter_entity in sorted(sortedfighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
     print(f'Fighter: {fighter_name} Elo: {fighter_entity.elo[-1]} Win/Loss ratio: W{fighter_entity.wins} L{fighter_entity.losses} Rank: {rank}')
     rank -= 1  # decrement rank
@@ -209,7 +209,7 @@ data = []  # Will collect data for the graph
 
 for fighter_name, fighter in fighters.items():
     for fight_date, elo in fighter.fighterEloHashMap.items():
-        print(fight_date)
+        # print(fight_date)
         data.append({
             'Fighter': fighter_name,
             'Date': reformat_date(fight_date),  # Apply reformatting
