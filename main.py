@@ -1,3 +1,5 @@
+#frontend code is very bad and was meant to quickly produce a UI. Improvements will be made in the future!
+
 import json
 from eloCalculations import EloCalculator
 from fight import FightEntity
@@ -27,18 +29,26 @@ fighters = {}  # Mapping fighter names to FighterEntity objects. Key = a string 
 fights = []  # List to hold FightEntity objects
 
 
-
+#loop where we populate the 'fights' list and 'fighters' hashmap
+#we start from the bottom of the JSON file, as that's the chroniclogical order of fights
 for i in range(len(data) - 1, -1, -1):
     
-    fight_entity = FightEntity()  
+    #create a fight entity for each fight we parse form the JSON
+    fight_entity = FightEntity()
 
-   
+#it is useful to have both the fighter entity and the fighter string, since the key to the _fighters hashmap is a string, the string version is needed.
+#though maybe we could parse the name of the fighterEntity to a string or something. Will think about that optimization later.
     fight_entity.r_fighter_string = data[i]['R_fighter']
     fight_entity.b_fighter_string = data[i]['B_fighter']
 
     # Check if fighters exist in the 'fighters' dictionary
+    '''
+     if  _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
+     _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
+    '''
     if fight_entity.b_fighter_string in fighters:
         fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string]
+    #same thing but for r 
     if fight_entity.r_fighter_string in fighters:
         fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
@@ -66,6 +76,8 @@ for i in range(len(data) - 1, -1, -1):
 
     fights.append(fight_entity)  # Add the entity to the fights list
 
+
+#optimize this to be just one constructor in the future. make it into a function?
 
     if fighters.get(fight_entity.r_fighter_string) is None:  # Check if fighter exists
         new_entry = {
@@ -142,26 +154,26 @@ for i in range(len(data) - 1, -1, -1):
 
 
 print('Creation of fighters hasmap and fights list has been completed! ')
-print('Length of the fighters hashmap:', len(fighters))  # Using len() for dictionary length
-print('Length of the fights list:', len(fights))        # Using len() for list length
+print('Length of the fighters hashmap:', len(fighters))  # fighters hashmap length
+print('Length of the fights list:', len(fights))        # fight list length
 
-
-_modifiers = []  # Create an empty list
-sub_win_input = None  # Assign None directly 
+#modifiers, future implementation
+_modifiers = []  
+sub_win_input = None  
 ko_tko_input = None
-_modifiers.append(sub_win_input)  # Use append() to add items to a list
+_modifiers.append(sub_win_input) 
 _modifiers.append(ko_tko_input)
 
 
 
 
-date_offight = ""  # Empty string for now
+date_of_fight = ""  # Empty string for now
 
 
 for fight in fights:
     if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
-        date_offight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
-        elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, fighters, _modifiers, date_offight)
+        date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
+        elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, fighters, _modifiers, date_of_fight)
 
 # 1. Sorting Fighters
 sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
