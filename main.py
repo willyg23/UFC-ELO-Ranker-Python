@@ -178,6 +178,16 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns 
 # Streamlit Section
 st.title("UFC ELO Ranker by William Griner")
 
+# URL of your LinkedIn profile
+linkedin_url = "https://www.linkedin.com/in/william-griner/"
+
+# Markdown badge for LinkedIn
+linkedin_badge = f"[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)]({linkedin_url})"
+st.markdown(linkedin_badge, unsafe_allow_html=True)
+
+
+''' ELO is a ranking system for chess players, and in this project, we apply the ELO system to UFC fighters. Allowing us to determine who the best UFC fighter is, mathematically. '''
+'''How to use:'''
 ''' 'Elo Range' to see all fighters' Elos over time'''
 ''' 'Elo Range' and 'weight_class' to see fighters' Elos in a certain weight class over time '''
 ''' 'Search By Fighter Name' to see a specific fighter's elo over time. i.e. 'Anderson Silva' '''
