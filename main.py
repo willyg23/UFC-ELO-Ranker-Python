@@ -186,7 +186,7 @@ st.title("UFC ELO Ranker by William Griner")
 # ----- Filtering Features Menu Section Start-----
 
 features = ["Elo Range", "weight_class", "Search By Fighter Name"] # Add "weight_class" to features
-selected_features = st.multiselect("Select Filtering Features:", features)
+selected_features = st.multiselect("Select Filtering Features:", features, default=["Elo Range"]) #default makes 'Elo Range' be selected by default
 
 # ----- Filtering Features Menu Section End -----
 
@@ -200,7 +200,7 @@ filtered_df = df.copy() # so we can maintain the orignal df for whenever we need
 
         # ----- Search By Fighter Name section Start -----
 if "Search By Fighter Name" in selected_features:
-    selected_features = ["Search By Fighter Name"]
+    selected_features = ["Search By Fighter Name"] # clears the other options that are selected. havnig Search by fighter name and other featues selected at the same time breaks the app.
     fighterSearchInput = st.text_input("Search for a Fighter:", "Conor Mcgregor")
     fighterSearchVar = fighterSearchInput.replace(" ", "").lower()  # Process input to remove spaces and convert to lowercase
 
@@ -318,4 +318,4 @@ else: # 'if Search Fighter By Name' isn't selected
         current_page += 1
         update_display()  
 
-    fig.canvas.mpl_connect('motion_notify_event', annotate)  
+    fig.canvas.mpl_connect('motion_notify_event', annotate)
