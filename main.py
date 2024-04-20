@@ -1,4 +1,4 @@
-#frontend code is very bad and was meant to quickly produce a UI. Improvements will be made in the future!
+#frontend code is very bad and was meant to quickly produce a UI. Improvements will be made in the future! 
 
 import json
 from createFighterEntityFunction import create_fighter
