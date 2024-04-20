@@ -150,12 +150,13 @@ def reformat_date(date_str):
 
 data = []  # Will collect data for the graph
 
-#populatesthe 'data' with the neccesary data for our graph
+# Populate the 'data' with the necessary data for our graph
 for fighter_name, fighter in fighters.items():
+    formatted_fighter_name = fighter_name.replace(" ", "").lower()  # Remove spaces and convert to lowercase
     for fight_date, elo in fighter.fighterEloHashMap.items():
-        # print(fight_date)
+        # print(fight_date) # for testing fight_date formatting
         data.append({
-            'Fighter': fighter_name,
+            'Fighter': formatted_fighter_name,
             'Date': reformat_date(fight_date),  # Apply reformatting
             'Elo': elo,
             'weight_class': fighter.weight_classes[0] 
@@ -190,18 +191,6 @@ selected_features = st.multiselect("Select Filtering Features:", features)
 # ----- Filtering Features Menu Section End -----
 
 
-# ----- Search Section Start ----- 
-
-# fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
-
-# filtered_df = df[df['Fighter'] == fighterSearchVar]
-# sns.lineplot(data=filtered_df, x='Date', y='Elo')  
-# plt.xticks(rotation=45) 
-# plt.title(f"Fighter Elo over Time: {fighterSearchVar}") 
-# st.pyplot(plt) # Display using Streamlit
-
-# ----- search section end -----
-
 # ----- filtering features section Start----- 
     # ------ Conditional Display of Filtering Components Section Start -----
 elo_mode = None  
@@ -210,27 +199,25 @@ elo_upper_bound = None
 filtered_df = df.copy() # so we can maintain the orignal df for whenever we need it.
 
         # ----- Search By Fighter Name section Start -----
-# if "Search By Fighter Name" in selected_features:
-#     selected_features = ["Search By Fighter Name"]
-#     fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
-#     filtered_df = df[df['Fighter'] == fighterSearchVar]
 if "Search By Fighter Name" in selected_features:
     selected_features = ["Search By Fighter Name"]
-    fighterSearchVar = st.text_input("Search for a Fighter:", "Drew Dober") 
+    fighterSearchInput = st.text_input("Search for a Fighter:", "Conor Mcgregor")
+    fighterSearchVar = fighterSearchInput.replace(" ", "").lower()  # Process input to remove spaces and convert to lowercase
+
     filtered_df = df[df['Fighter'] == fighterSearchVar]
 
-    # --- Create plot for searched fighter --- 
-    plt.figure(figsize=(10, 6)) # Create a new figure 
-    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False) 
-    plt.xticks(rotation=45) 
-    plt.title(f"Fighter Elo over Time: {fighterSearchVar}") # Dynamic title
+    # --- Create plot for searched fighter ---
+    plt.figure(figsize=(10, 6))  # Create a new figure
+    sns.lineplot(data=filtered_df, x='Date', y='Elo', hue='Fighter', legend=False)
+    plt.xticks(rotation=45)
+    plt.title(f"Fighter Elo over Time: {fighterSearchInput}")  # Dynamic title using the original input for display
 
-    legend_container = st.empty() # Placeholder for the legend
+    legend_container = st.empty()  # Placeholder for the legend
 
     # ... (Update `update_display` function to only handle legend if needed)
 
-    st.pyplot(plt) # Display using Streamlit
-        # ----- Search By Fighter Name section End -----
+    st.pyplot(plt)  # Display using Streamlit
+        # ----- Search By Fighter Name section End -----    
 
             # ----- Elo filtering mode section Start -----
 else: # 'if Search Fighter By Name' isn't selected
@@ -241,14 +228,14 @@ else: # 'if Search Fighter By Name' isn't selected
         elo_mode = st.selectbox("Elo Filtering Mode:", ["above", "below", "within"])
 
         if elo_mode in ["above", "below"]:  # Combine cases for 'above' and 'below'
-            elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1300 if elo_mode == "above" else 1100, step=50)
+            elo_threshold = st.number_input(f"Elo Threshold ({elo_mode}):", value=1100 if elo_mode == "above" else 1100, step=25)
 
         else:  # 'within' mode
             col1, col2 = st.columns(2)  
             with col1:
-                elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=50)
+                elo_lower_bound = st.number_input("Elo Lower Bound:", value=1300, step=25)
             with col2:
-                elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=50)
+                elo_upper_bound = st.number_input("Elo Upper Bound:", value=1400, step=25)
 
     # Data Filtering 
 
