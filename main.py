@@ -43,10 +43,10 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity.b_fighter_string = data[i]['B_fighter']
 
     # Check if fighters exist in the 'fighters' dictionary
-    '''
-     if  _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
-     _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
-    '''
+    
+    # if _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
+    # _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
+    
     if fight_entity.b_fighter_string in fighters:
         fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string]
     #same thing but for r 
@@ -88,7 +88,7 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
 
-    if fighters.get(fight_entity.b_fighter_string) is None:
+    if fighters.get(fight_entity.b_fighter_string) is None:  # Check if fighter exists
         # add the fighter  entry to the fighters hash map
         fighters[fight_entity.b_fighter_string] = FighterEntity(**create_fighter(fight_entity, data, "B", i))
         
@@ -138,7 +138,7 @@ print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # should b
 print(fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # should be 1247
 print(fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # should be 1191
 
-"""Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
+# Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY'
 def reformat_date(date_str):
     if '-' in date_str: 
         parts = date_str.split('-')
