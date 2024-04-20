@@ -179,22 +179,21 @@ for fight in fights:
 sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reverse=True) 
 
 # 2. Iteration and Ranking
-# have the highest ranked fighter print last, so in the terminal, you'll see the highest ranked fighters first.
-rank = 1749  # Start rank at 1749 (amount of fighters)
+# the highest ranked fighter prints last, so in the terminal, you'll see the highest ranked fighters first.
+rank = len(fighters)  # initialize rank to the length of the fighters hashmap, which is currently 1749
 for fighter_name, fighter_entity in sorted(sortedfighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
     print(f'Fighter: {fighter_name} Elo: {fighter_entity.elo[-1]} Win/Loss ratio: W{fighter_entity.wins} L{fighter_entity.losses} Rank: {rank}')
     rank -= 1  # decrement rank
 
 print("eloHashMap Test") 
 print("fighterEloHashMap test:")
-print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # 1313
-print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # 1343
-print(fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # 1247
-print(fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # 1191
+print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-4-23-2016"])  # should be 1313
+print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # should be 1343
+print(fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # should be 1247
+print(fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # should be 1191
 
-
+"""Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
 def reformat_date(date_str):
-    """Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
     if '-' in date_str: 
         parts = date_str.split('-')
         return '-'.join(parts[1:])  # Re-assemble as MM-DD-YYYY
@@ -205,18 +204,16 @@ def reformat_date(date_str):
 
 data = []  # Will collect data for the graph
 
-
-
+#populatesthe 'data' with the neccesary data for our graph
 for fighter_name, fighter in fighters.items():
     for fight_date, elo in fighter.fighterEloHashMap.items():
-        print(fight_date)
+        # print(fight_date)
         data.append({
             'Fighter': fighter_name,
             'Date': reformat_date(fight_date),  # Apply reformatting
             'Elo': elo,
             'weight_class': fighter.weight_classes[0] 
         })
-
 
 df = pd.DataFrame(data) # Create the dataframe
 df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns into datetime objects
