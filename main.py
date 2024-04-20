@@ -185,8 +185,7 @@ linkedin_url = "https://www.linkedin.com/in/william-griner/"
 linkedin_badge = f"[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)]({linkedin_url})"
 st.markdown(linkedin_badge, unsafe_allow_html=True)
 
-
-''' ELO is a ranking system for chess players, and in this project, we apply the ELO system to UFC fighters. Allowing us to determine who the best UFC fighter is, mathematically. '''
+''' After a heated debate with my friend over who the GOAT of the UFC is, I set out to prove him wrong mathematically. I also love to play online chess. Seeing that chess is a 1v1 sport with a algorithimic ranking system (ELO), we can apply the ELO system to the ranking UFC fighters. Thus allowing us to determine who the best UFC fighter is, mathematically. '''
 '''How to use:'''
 ''' 'Elo Range' to see all fighters' Elos over time'''
 ''' 'Elo Range' and 'weight_class' to see fighters' Elos in a certain weight class over time '''
