@@ -1,6 +1,7 @@
 #frontend code is very bad and was meant to quickly produce a UI. Improvements will be made in the future!
 
 import json
+from createFighterEntityFunction import create_fighter
 from eloCalculations import EloCalculator
 from fight import FightEntity
 from fighter import FighterEntity
@@ -42,10 +43,10 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity.b_fighter_string = data[i]['B_fighter']
 
     # Check if fighters exist in the 'fighters' dictionary
-    '''
-     if  _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
-     _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
-    '''
+    
+    # if _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
+    # _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
+    
     if fight_entity.b_fighter_string in fighters:
         fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string]
     #same thing but for r 
@@ -80,74 +81,19 @@ for i in range(len(data) - 1, -1, -1):
 #optimize this to be just one constructor in the future. make it into a function?
 
     if fighters.get(fight_entity.r_fighter_string) is None:  # Check if fighter exists
-        new_entry = {
-            "name": fight_entity.r_fighter_string,
-            "weight_classes": [fight_entity.weight_class],   
-            "gender": data[i]["gender"],
-            "current_win_streak": data[i]["R_current_win_streak"],
-            "current_loss_streak": data[i]["R_current_lose_streak"],
-            "avg_SIG_STR_landed": data[i]["R_avg_SIG_STR_landed"],  
-            "avg_SIG_STR_pct": data[i]["R_avg_SIG_STR_pct"], 
-            "avg_SUB_ATT": data[i]["R_avg_SUB_ATT"], 
-            "avg_TD_landed": data[i]["R_avg_TD_landed"],  
-            "avg_TD_pct": data[i]["R_avg_TD_pct"],  
-            "total_rounds_fought": data[i]["R_total_rounds_fought"],
-            "total_title_bouts": data[i]["R_total_title_bouts"],
-            "wins_by_Decision_Majority": data[i]["R_win_by_Decision_Majority"],
-            "wins_by_Decision_Split": data[i]["R_win_by_Decision_Split"],
-            "wins_by_Decision_Unanimous": data[i]["R_win_by_Decision_Unanimous"],
-            "wins_by_KO": data[i]["R_win_by_KO/TKO"],
-            "wins_by_Submission": data[i]["R_win_by_Submission"],
-            "wins_by_TKO_Doctor_Stoppage": data[i]["R_win_by_TKO_Doctor_Stoppage"],
-            "height_cms": data[i]["R_Height_cms"],  
-            "reach_cms": data[i]["R_Reach_cms"],  
-            "elo": [1200],  
-            "fight_history": [fight_entity],  
-            "stance": data[i]["R_Stance"],
-            "wins": 0,
-            "age": fight_entity.r_age,
-            "losses": 0   
-        }
         # add the fighter  entry to the fighters hash map
-        fighters[fight_entity.r_fighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.r_fighter_string] = FighterEntity(**create_fighter(fight_entity, data, "R", i))
 
-    # Set the fight entity's r_fighter_entity field
+    # Set the fight entity's r_fighter_entity field, with the fighterEntity of the Red corner fighter
     fight_entity.r_fighter_entity = fighters[fight_entity.r_fighter_string]
 
 
-    if fighters.get(fight_entity.b_fighter_string) is None: 
-        new_entry = {
-            "name": fight_entity.b_fighter_string,
-            "weight_classes": [fight_entity.weight_class],   
-            "gender": data[i]["gender"],
-            "current_win_streak": data[i]["B_current_win_streak"],
-            "current_loss_streak": data[i]["B_current_lose_streak"],
-            "avg_SIG_STR_landed": data[i]["B_avg_SIG_STR_landed"], 
-            "avg_SIG_STR_pct": data[i]["B_avg_SIG_STR_pct"], 
-            "avg_SUB_ATT": data[i]["B_avg_SUB_ATT"], 
-            "avg_TD_landed": data[i]["B_avg_TD_landed"],  
-            "avg_TD_pct": data[i]["B_avg_TD_pct"],  
-            "total_rounds_fought": data[i]["B_total_rounds_fought"],
-            "total_title_bouts": data[i]["B_total_title_bouts"],
-            "wins_by_Decision_Majority": data[i]["B_win_by_Decision_Majority"],
-            "wins_by_Decision_Split": data[i]["B_win_by_Decision_Split"],
-            "wins_by_Decision_Unanimous": data[i]["B_win_by_Decision_Unanimous"],
-            "wins_by_KO": data[i]["B_win_by_KO/TKO"],
-            "wins_by_Submission": data[i]["B_win_by_Submission"],
-            "wins_by_TKO_Doctor_Stoppage": data[i]["B_win_by_TKO_Doctor_Stoppage"],
-            "height_cms": data[i]["B_Height_cms"],  
-            "reach_cms": data[i]["B_Reach_cms"],  
-            "elo": [1200],  
-            "fight_history": [fight_entity],  
-            "stance": data[i]["B_Stance"],
-            "wins": 0,
-            "age": fight_entity.b_age,  
-            "losses": 0   
-        }
+    if fighters.get(fight_entity.b_fighter_string) is None:  # Check if fighter exists
         # add the fighter  entry to the fighters hash map
-        fighters[fight_entity.b_fighter_string] = FighterEntity(**new_entry)
+        fighters[fight_entity.b_fighter_string] = FighterEntity(**create_fighter(fight_entity, data, "B", i))
+        
 
-    # Set the fight entity's b_fighter_entity field
+    # Set the fight entity's b_fighter_entity field, with the fighterEntity of the Blue corner fighter
     fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string] 
 
 #------------------------------------------end of the for loop that creates the fight list and fighters hashmap
@@ -192,7 +138,7 @@ print(fighters["Jon Jones"].fighterEloHashMap["Jon Jones-7-6-2019"])  # should b
 print(fighters["Alexander Gustafsson"].fighterEloHashMap["Alexander Gustafsson-5-28-2017"])  # should be 1247
 print(fighters["Drew Dober"].fighterEloHashMap["Drew Dober-12-13-2014"])  # should be 1191
 
-"""Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY' """
+# Reformats dates from 'Name-MM-DD-YYYY' to 'MM-DD-YYYY'
 def reformat_date(date_str):
     if '-' in date_str: 
         parts = date_str.split('-')
