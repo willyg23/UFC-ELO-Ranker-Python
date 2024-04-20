@@ -175,7 +175,12 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns 
 
 
 # Streamlit Section
-st.title("Fighter Elo over Time")
+st.title("UFC ELO Ranker by William Griner")
+
+''' 'Elo Range' to see all fighters' Elos over time'''
+''' 'Elo Range' and 'weight_class' to see fighters' Elos in a certain weight class over time '''
+''' 'Search By Fighter Name' to see a specific fighter's elo over time. i.e. 'Anderson Silva' '''
+
 
 # ----- Filtering Features Menu Section Start-----
 
