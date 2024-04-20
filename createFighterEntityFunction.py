@@ -1,0 +1,30 @@
+def create_fighter(fight_entity, data, corner, i):
+    new_entry = {
+            "name": fight_entity.r_fighter_string,
+            "weight_classes": [fight_entity.weight_class],   
+            "gender": data[i]["gender"],
+            "current_win_streak": data[i][f"{corner}_current_win_streak"],
+            "current_loss_streak": data[i][f"{corner}_current_lose_streak"],
+            "avg_SIG_STR_landed": data[i][f"{corner}_avg_SIG_STR_landed"],  
+            "avg_SIG_STR_pct": data[i][f"{corner}_avg_SIG_STR_pct"], 
+            "avg_SUB_ATT": data[i][f"{corner}_avg_SUB_ATT"], 
+            "avg_TD_landed": data[i][f"{corner}_avg_TD_landed"],  
+            "avg_TD_pct": data[i][f"{corner}_avg_TD_pct"],  
+            "total_rounds_fought": data[i][f"{corner}_total_rounds_fought"],
+            "total_title_bouts": data[i][f"{corner}_total_title_bouts"],
+            "wins_by_Decision_Majority": data[i][f"{corner}_win_by_Decision_Majority"],
+            "wins_by_Decision_Split": data[i][f"{corner}_win_by_Decision_Split"],
+            "wins_by_Decision_Unanimous": data[i][f"{corner}_win_by_Decision_Unanimous"],
+            "wins_by_KO": data[i][f"{corner}_win_by_KO/TKO"],
+            "wins_by_Submission": data[i][f"{corner}_win_by_Submission"],
+            "wins_by_TKO_Doctor_Stoppage": data[i][f"{corner}_win_by_TKO_Doctor_Stoppage"],
+            "height_cms": data[i][f"{corner}_Height_cms"],  
+            "reach_cms": data[i][f"{corner}_Reach_cms"],  
+            "elo": [1200],  
+            "fight_history": [fight_entity],  
+            "stance": data[i][f"{corner}_Stance"],
+            "wins": 0,
+            "age": fight_entity.r_age,
+            "losses": 0   
+        }
+    return new_entry
