@@ -10,6 +10,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
+import sys
+# st.write("Running Python version:", sys.version)
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
