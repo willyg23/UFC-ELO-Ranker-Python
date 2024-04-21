@@ -182,10 +182,16 @@ st.title("UFC ELO Ranker by William Griner")
 
 # URL of your LinkedIn profile
 linkedin_url = "https://www.linkedin.com/in/william-griner/"
+github_url = "https://github.com/willyg23"
 
 # Markdown badge for LinkedIn
 linkedin_badge = f"[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)]({linkedin_url})"
-st.markdown(linkedin_badge, unsafe_allow_html=True)
+github_badge = f"[![GitHub](https://img.shields.io/badge/GitHub-%23181717.svg?logo=github&logoColor=white)]({github_url})"
+
+
+# Display badges side by side using Markdown in Streamlit, allowing HTML
+badges = f"{linkedin_badge} {github_badge}"
+st.markdown(badges, unsafe_allow_html=True)
 
 ''' After a heated debate with my friend over who the GOAT of the UFC is, I set out to prove him wrong mathematically. I also love to play online chess. Seeing that chess is a 1v1 sport with a algorithimic ranking system (ELO), we can apply the ELO system to the ranking UFC fighters. Thus allowing us to determine who the best UFC fighter is, mathematically. '''
 '''How to use:'''
