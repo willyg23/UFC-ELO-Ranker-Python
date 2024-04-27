@@ -299,7 +299,6 @@ else: # 'if Search Fighter By Name' isn't selected
         hover_label.text(x, y, closest_fighter)  
         fig.canvas.draw_idle()
 
-
     fig.canvas.mpl_connect('motion_notify_event', annotate)  
 
     # --- Create initial plot --- 
