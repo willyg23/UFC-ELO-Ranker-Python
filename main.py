@@ -176,7 +176,6 @@ df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns 
 # plt.show()
 
 
-
 # Streamlit Section
 st.title("UFC ELO Ranker by William Griner")
 
