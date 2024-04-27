@@ -277,7 +277,6 @@ else: # 'if Search Fighter By Name' isn't selected
 
 
 
-
         # ------ Conditional Display of Filtering Components Section End -----
     # ----- filtering features section End ----- 
 
