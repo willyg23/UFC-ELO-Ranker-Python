@@ -14,7 +14,7 @@ All light heavyweight fighters ranked:
 ![all_light_heavyweights_graph.png](all_light_heavyweights_graph.png)
 
 Jon Jones's individual ELO Ranking over time:
-![hon_jones_elo_graph](anderson_silva_elo_graph.png)
+![jon_jones_elo_graph](jon_jones_elo_graph.png)
 
 Conor McGregor's indivdual ELO ranking over time:
 ![conor_mcgregor_elo_graph](conor_mcgregor_elo_graph.png)
