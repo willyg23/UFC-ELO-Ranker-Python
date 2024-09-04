@@ -1,6 +1,8 @@
 ﻿# UFC-ELO-Ranker-Python
 Have you ever wondered who the greatest UFC fighter of all time is? Well now you can know the answer, via a custom ELO ranking system, similar to those found in chess or ranked video games.
-Interact with this project on this website: https://ufc-elo-ranker.streamlit.app/
+
+<a href=" https://ufc-elo-ranker.streamlit.app/" target="_blank">Interact with this project on this website!</a>
+<!-- target="_blank">   opens the link in a new tab -->
 
 Here are some examples of the ELO ranking system's output:
 
