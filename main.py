@@ -1,5 +1,3 @@
-#frontend code is very bad and was meant to quickly produce a UI. Improvements will be made in the future! 
-
 import json
 from createFighterEntityFunction import create_fighter
 from eloCalculations import EloCalculator
@@ -11,17 +9,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 import sys
-# st.write("Running Python version:", sys.version)
 
 with open('ufc_data.json', 'r') as f:
     load = json.load(f)
 
     data = load['items']
 
-# Initialize the eloCalculator object
 elo_calculator_object = EloCalculator()  
 
-# Python dictionary for the 'eloHashMap' concept
 elo_hash_map = {}  # Key: FighterFirstName FighterLastName-month-day-year, Value: ELO
 
 # Dictionaries for Fighters and Fights
@@ -40,15 +35,12 @@ for i in range(len(data) - 1, -1, -1):
     fight_entity = FightEntity()
 
 #it is useful to have both the fighter entity and the fighter string, since the key to the _fighters hashmap is a string, the string version is needed.
-#though maybe we could parse the name of the fighterEntity to a string or something. Will think about that optimization later.
+#though maybe we could parse the name of the fighterEntity to a string or something. idk if that'd be any simpler though. Will think about that later.
     fight_entity.r_fighter_string = data[i]['R_fighter']
     fight_entity.b_fighter_string = data[i]['B_fighter']
 
     # Check if fighters exist in the 'fighters' dictionary
-    
-    # if _fightEntity.b_fighter is in the _fighters hashmap, add b_fighter's fighterEntity (accessed via the _fighters hashmap) to 
-    # _fightEntity's b_fighter_entity value (_fightEntity.b_fighter_entity)
-    
+        
     if fight_entity.b_fighter_string in fighters:
         fight_entity.b_fighter_entity = fighters[fight_entity.b_fighter_string]
     #same thing but for r 
@@ -115,12 +107,11 @@ _modifiers.append(ko_tko_input)
 
 
 
-date_of_fight = ""  # Empty string for now
-
+date_of_fight = ""
 
 for fight in fights:
     if fight.winner is not None and fight.r_fighter_string is not None and fight.b_fighter_string is not None:
-        date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"  # Using an f-string
+        date_of_fight = f"{fight.month}-{fight.day}-{fight.year}"
         elo_calculator_object.setNewRating(fight.winner, fight.r_fighter_string, fight.b_fighter_string, fighters, _modifiers, date_of_fight)
 
 # 1. Sorting Fighters
@@ -128,8 +119,9 @@ sortedfighters = sorted(fighters.items(), key=lambda item: item[1].elo[-1], reve
 
 # 2. Iteration and Ranking
 # have the highest ranked fighter print last, so in the terminal, you'll see the highest ranked fighters first.
+    # keep in mind that highest ranked is rank 1. so highest rank == the lowest number in the rankings, which is why we decrement rank in our for loop.
 rank = len(fighters)  # initialize rank to the length of the fighters hashmap, which is currently 1749
-for fighter_name, fighter_entity in sorted(sortedfighters, key=lambda item: item[1].elo[-1]): # No reverse=True needed
+for fighter_name, fighter_entity in sorted(sortedfighters, key=lambda item: item[1].elo[-1]):
     print(f'Fighter: {fighter_name} Elo: {fighter_entity.elo[-1]} Win/Loss ratio: W{fighter_entity.wins} L{fighter_entity.losses} Rank: {rank}')
     rank -= 1  # decrement rank
 
@@ -150,34 +142,26 @@ def reformat_date(date_str):
 
 
 
-data = []  # Will collect data for the graph
+data = []  # will collect data for the graph
 
-# Populate the 'data' with the necessary data for our graph
+# populate 'data' with the necessary data for our graph
 for fighter_name, fighter in fighters.items():
-    formatted_fighter_name = fighter_name.replace(" ", "").lower()  # Remove spaces and convert to lowercase
+    formatted_fighter_name = fighter_name.replace(" ", "").lower()  # remove spaces and convert to lowercase
     for fight_date, elo in fighter.fighterEloHashMap.items():
         # print(fight_date) # for testing fight_date formatting
         data.append({
             'Fighter': formatted_fighter_name,
-            'Date': reformat_date(fight_date),  # Apply reformatting
+            'Date': reformat_date(fight_date),  # apply reformatting
             'Elo': elo,
             'weight_class': fighter.weight_classes[0] 
         })
 
-df = pd.DataFrame(data) # Create the dataframe
+df = pd.DataFrame(data) # create the dataframe
 df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%Y')  #parse date columns into datetime objects
 
 
-#first graph impl
-
-# sns.lineplot(data=df, x='Date', y='Elo', hue='Fighter') 
-# plt.xticks(rotation=45) 
-# plt.title("Fighter Elo over Time") 
-# plt.show()
-
-
-
 # Streamlit Section
+    # note that frontend code is very bad and was meant to quickly produce a UI.
 st.title("UFC ELO Ranker by William Griner")
 
 # URL of your LinkedIn profile
